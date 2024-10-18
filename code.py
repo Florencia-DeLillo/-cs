@@ -59,11 +59,14 @@ def calculate_fingerprint(smiles, dimensions=1024, radius=2, is_counted=False, i
     encoder = MHFPEncoder(dimensions)
     atom_env_pairs = all_pairs(mol, get_atom_envs(mol, radius), radius, is_counted)
 
-    if is_folded:
-        fp_hash = encoder.hash(set(atom_env_pairs))
-        return encoder.fold(fp_hash, dimensions)
+    # Calculate the MinHash fingerprint using the encoder's hash function
+    fingerprint = encoder.hash(set(atom_env_pairs))
 
-    return encoder.from_string_array(atom_env_pairs)
+    if is_folded:
+        # Optionally fold the fingerprint to reduce dimensionality
+        return encoder.fold(fingerprint, dimensions)
+
+    return fingerprint
 
 
 if __name__ == "__main__":
@@ -76,4 +79,3 @@ if __name__ == "__main__":
     # Print the fingerprint
     print(f"SMILES: {smiles}")
     print(f"Fingerprint: {fingerprint}")
-
